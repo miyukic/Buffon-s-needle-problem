@@ -4,6 +4,7 @@
 #include <random>
 #include <cmath>
 #include <chrono>
+#include <utility>
 
 
 
@@ -21,7 +22,7 @@ class BNP {
 
     std::vector<double> dropPoint{};               // 針の中心と線までの距離 
     std::vector<double> dropAngle{};               // sinΘ 
-    uint64_t touchLineCount{0};                     // 針が線に触れた数
+    uint64_t touchLineCount{0};                    // 針が線に触れた数
 
     BNP() : seed{seed_gen()}, engine{seed} { }
     ~BNP() { }
@@ -29,7 +30,7 @@ class BNP {
     void drop() {
         //std::mt19937 engine{this->seed};
         std::uniform_real_distribution<> dist{0, 1};
-        dropPoint.push_back(dist(engine) * LINE_WIDTH / 2.0L);
+        dropPoint.push_back(dist(engine) * (LINE_WIDTH / 2));
         dropAngle.push_back(simulation2());
     }
 
@@ -39,7 +40,7 @@ class BNP {
     void totalingTouchLine() {
         for (auto i = 0; i < dropAngle.size(); i++) {
              // 1/2*l+sinΘ
-            double h = (BNP::NEEDLE_LENGTH >> 2) + dropAngle[i];
+            double h = (BNP::NEEDLE_LENGTH / 2) * dropAngle[i];
             if (h >= dropPoint[i]) {
                 this->touchLineCount++;
             }
@@ -67,9 +68,9 @@ class BNP {
     // 一様な分布を用いてΘをランダムに決定しsinΘを返す。 <
     // ===================================================
     double simulation2() {
-        double radius = 0.0L;
-        double dy = 0.0L;
-        double dx = 0.0L;
+        double radius = 0.0;
+        double dy = 0.0;
+        double dx = 0.0;
         std::uniform_real_distribution<> dist{0, 1};
             while (true) {
                 dx = dist(engine);
@@ -88,13 +89,17 @@ class BNP {
 
 } // namespace myk end
 
+template<typename T>
+void savefileCSV(const std::vector<T>& vec) {
+}
+
 using namespace myk;
 
 int main(int argc, char* argv[]) {
     std::chrono::system_clock::time_point start, end;
     start = std::chrono::system_clock::now(); // 計測開始
     BNP bnp{};
-    constexpr auto TIMES = 30000;
+    constexpr auto TIMES = 3000;
     for (auto i = 0; i < TIMES; i++) bnp.drop();
     bnp.totalingTouchLine();
     double pi = bnp.calc();
@@ -104,10 +109,12 @@ int main(int argc, char* argv[]) {
 
     double time = static_cast<double>(
                 std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-                .count() / 1000.0F
-            ); // 秒
-    std::cout << "経過時間" << std::round(time * 1000) / 1000 << std::endl; 
+                .count() / (1000.0 * 1000.0)
+            ); // 秒 
+    std::cout << "経過時間:" << std::round(time * 1000) / 1000 << " 秒" << std::endl; 
+
 
 }
+
 
 

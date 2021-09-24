@@ -6,7 +6,11 @@ from time import time
 import matplotlib.pyplot as plt
 import sys
 from matplotlib.font_manager import FontProperties
-fp = FontProperties(fname='C:\WINDOWS\Fonts\msgothic.ttc', size=14)
+
+import os
+fp: str = ""
+if os.name == "nt":
+    fp = FontProperties(fname='C:\WINDOWS\Fonts\msgothic.ttc', size=14)
 
 
 def main(argv: Tuple):
@@ -35,13 +39,18 @@ def main(argv: Tuple):
 
     ax[0].hist(y1, bins=60)
     ax[0].set_ylabel('freq')
-    ax[0].set_title('xをランダムに決定しy座標を算出する', FontProperties=fp)
     ax[0].set_xlabel('sinΘ')
 
     ax[1].hist(y2, bins=60)
     ax[1].set_ylabel('freq')
-    ax[1].set_title('Θを0~180°で一様にダンダム', FontProperties=fp)
     ax[1].set_xlabel('sinΘ')
+    if os.name == "nt":
+        ax[0].set_title('xをランダムに決定しy座標を算出する', FontProperties=fp)
+        ax[1].set_title('Θを0~180°で一様にダンダム', FontProperties=fp)
+    else:
+        ax[0].set_title('Determine x randomly and calculate y coordinate')
+        ax[1].set_title('Uniformly damped Θ at 0°-180°')
+
     fig.show()
     plt.savefig("result.png")
     plt.show()
