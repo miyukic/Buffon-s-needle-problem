@@ -1,3 +1,6 @@
+/*
+clang++-11 bs_needle_problem.cpp -I/usr/include/python3.8 -I$HOME/.local/lib/python3.8/site-packages/numpy/core/include -lpython3.8
+ */
 #include <iostream>
 #include <string>
 #include <vector>
@@ -5,6 +8,7 @@
 #include <cmath>
 #include <chrono>
 #include <utility>
+#include "matplotlibcpp.h"
 
 
 
@@ -40,8 +44,8 @@ class BNP {
     void totalingTouchLine() {
         for (auto i = 0; i < dropAngle.size(); i++) {
              // 1/2*l+sinΘ
-            double h = (BNP::NEEDLE_LENGTH / 2) * dropAngle[i];
-            if (h >= dropPoint[i]) {
+            double h = (BNP::NEEDLE_LENGTH / 2) * dropAngle.at(i);
+            if (h >= dropPoint.at(i)) {
                 this->touchLineCount++;
             }
         }
