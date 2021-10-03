@@ -1,5 +1,5 @@
 /*
-clang++-11 bs_needle_problem.cpp -I/usr/include/python3.8 -I$HOME/.local/lib/python3.8/site-packages/numpy/core/include -lpython3.8
+ * clang++-11 bs_needle_problem.cpp -I/usr/include/python3.8 -I$HOME/.local/lib/python3.8/site-packages/numpy/core/include -lpython3.8
  */
 #include <iostream>
 #include <string>
@@ -9,18 +9,23 @@ clang++-11 bs_needle_problem.cpp -I/usr/include/python3.8 -I$HOME/.local/lib/pyt
 #include <chrono>
 #include <utility>
 #include "matplotlibcpp.h"
+//#include <algorithm>
+//#include <numbers>
 
 
 
 namespace myk {
 
+constexpr double PI = 3.141592653589793238462643383279502884L;
+
 class BNP {
 
     std::random_device seed_gen;
     uint64_t seed;
-    std::mt19937 engine;
 
   public:
+    std::mt19937 engine;
+
     static constexpr uint8_t NEEDLE_LENGTH = 5;                 // 針の長さ(l)
     static constexpr uint8_t LINE_WIDTH = NEEDLE_LENGTH * 2;    // 線の幅(w)
 
@@ -34,6 +39,7 @@ class BNP {
     void drop() {
         //std::mt19937 engine{this->seed};
         std::uniform_real_distribution<> dist{0, 1};
+//std::cout << dist(engine) << std::endl;
         dropPoint.push_back(dist(engine) * (LINE_WIDTH / 2));
         dropAngle.push_back(simulation2());
     }
@@ -42,9 +48,9 @@ class BNP {
     // 針が線に触れている数を集計。                  < 
     // ===============================================
     void totalingTouchLine() {
-        for (auto i = 0; i < dropAngle.size(); i++) {
+        for (std::size_t i = 0; i < dropAngle.size(); i++) {
              // 1/2*l+sinΘ
-            double h = (BNP::NEEDLE_LENGTH / 2) * dropAngle.at(i);
+            double h = ((double)BNP::NEEDLE_LENGTH / 2) * dropAngle.at(i);
             if (h >= dropPoint.at(i)) {
                 this->touchLineCount++;
             }
@@ -54,8 +60,10 @@ class BNP {
     double calc() const {
         uint64_t numberOfTrials = dropAngle.size();
         std::cout << "回数:" << numberOfTrials << std::endl;
+
         return (double) numberOfTrials / this->touchLineCount;
     }
+
 
     // ==================================================
     // 単位円上にランダムに点を置き、一様な分布を用いて <
@@ -63,9 +71,10 @@ class BNP {
     // ==================================================
     double simulation() {
         // WIP
-        uint8_t r = 0;
+        //uint8_t r = 0;
         return 0;
     }
+
 
     // ===================================================
     // 単位円内にランダムに点を置き、                    <
@@ -91,33 +100,61 @@ class BNP {
 
 };
 
+
 } // namespace myk end
 
-template<typename T>
-void savefileCSV(const std::vector<T>& vec) {
-}
 
-using namespace myk;
+using myk::BNP;
 
-int main(int argc, char* argv[]) {
+int main() {
+
     std::chrono::system_clock::time_point start, end;
+
     start = std::chrono::system_clock::now(); // 計測開始
     BNP bnp{};
-    constexpr auto TIMES = 3000;
+    constexpr auto TIMES = 5000000;
     for (auto i = 0; i < TIMES; i++) bnp.drop();
     bnp.totalingTouchLine();
     double pi = bnp.calc();
     end = std::chrono::system_clock::now(); // 計測終わり
-    std::cout << "π= " << pi << std::endl;
-    std::cout << "触れた回数:" << bnp.touchLineCount << std::endl;
 
     double time = static_cast<double>(
                 std::chrono::duration_cast<std::chrono::microseconds>(end - start)
                 .count() / (1000.0 * 1000.0)
             ); // 秒 
+
+    std::cout << "π= " << pi << std::endl;
+    std::cout << "触れた回数:" << bnp.touchLineCount << std::endl;
     std::cout << "経過時間:" << std::round(time * 1000) / 1000 << " 秒" << std::endl; 
 
 
+    // グラフ表示
+    
+    //0~180°からランダムに選びsinΘをベクターに格納
+    std::vector<double> y2;
+    for (auto i = 0; i < TIMES; i++) {
+        std::uniform_real_distribution<> dist{0, 1};
+        y2.push_back(std::sin(dist(bnp.engine) * myk::PI));
+    }
+    namespace plt = matplotlibcpp;
+    plt::subplot(2, 1, 1);
+    plt::hist(y2, 100, "darkcyan");
+    plt::subplots_adjust({{"hspace", 0.6}});
+
+    //BNPオブジェクトのdropAngleをベクターに格納
+    //std::vector<double> y3{};
+    //for (auto i = 0; i < TIMES; i++) {
+    //    y3.push_back(bnp.dropAngle.at(i));
+    //}
+
+    plt::subplot(2, 1, 2);
+    plt::hist(bnp.dropAngle, 100, "c");
+
+    plt::show();
+
+    // グラフ表示終わり
+
+    
 }
 
 

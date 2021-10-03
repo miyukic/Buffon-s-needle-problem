@@ -1,3 +1,4 @@
 *.swp
 *.out
 *.o
+*compile_commands.json

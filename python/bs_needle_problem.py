@@ -17,7 +17,7 @@ def main(argv: Tuple):
     start = time()
     bnp = Bnp()
     #bnp.create_needle()
-    num_times = 3000
+    num_times = 300000
     for i in range(num_times):
         bnp.drop()
     bnp.totaling_touch_line()
@@ -83,6 +83,8 @@ class Bnp():
     def calc(self) -> float:
         numberOfTrials = len(self.drop_angle)
         print("回数:", numberOfTrials, sep="")
+        print(f"Bnp#touch_line_count={self.touch_line_count}")
+        print(f"numberOfTrials={numberOfTrials}")
         return numberOfTrials / self.touch_line_count
 
     def simulation() -> float:
