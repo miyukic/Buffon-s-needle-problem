@@ -8,7 +8,7 @@
 #include <cmath>
 #include <chrono>
 #include <utility>
-#include "matplotlibcpp.h"
+#include "./lib/matplotlibcpp.h"
 //#include <algorithm>
 //#include <numbers>
 
