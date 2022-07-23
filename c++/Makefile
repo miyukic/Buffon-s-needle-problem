@@ -1,7 +1,7 @@
 TARGET = bnp.out
-CXX = clang++-11
+CXX = clang++-14
 OBJS = bs_needle_problems.o
-CXXFLAGS = -Wall -Wextra -std=c++20 -I/usr/include/python3.8 -I$(HOME)/.local/lib/python3.8/site-packages/numpy/core/include -lpython3.8
+CXXFLAGS = -Wall -Wextra -std=c++20 -I/usr/include/python3.10 -I$(HOME)/.local/lib/python3.10/site-packages/numpy/core/include -lpython3.10
 LDFLAGS = 
 
 #clang++-11 bs_needle_problem.cpp -I/usr/include/python3.8 -I$HOME/.local/lib/python3.8/site-packages/numpy/core/include -lpython3.8
